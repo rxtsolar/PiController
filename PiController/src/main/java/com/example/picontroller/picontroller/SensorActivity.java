@@ -23,8 +23,9 @@ public class SensorActivity extends Activity implements SensorEventListener {
     private Sensor mGravity;
     private Socket socket;
     private static final int SERVER_PORT = 25640;
-    private static final String SERVER_IP = "192.168.0.109";
+    private static final String SERVER_IP = "192.168.0.111";
     private static final double THRESHOLD = 2.0;
+    private String instruction = "";
 
     @Override
     public final void onCreate(Bundle savedInstanceState) {
@@ -82,26 +83,42 @@ public class SensorActivity extends Activity implements SensorEventListener {
 //        for (int i = 0; i < event.values.length; i++) {
 //            Log.e("event", "value[" + i + "] is " + event.values[i]);
 //        }
-        String output = "";
+        String output;
         double x = event.values[0];
         double y = event.values[1];
 
         if (y > THRESHOLD) {
-            output += 's';
+            if (x > THRESHOLD) {
+                output = "z";
+            } else if (x < -THRESHOLD) {
+                output = "c";
+            } else {
+                output = "x";
+            }
         } else if (y < -THRESHOLD) {
-            output += 'w';
-        }
-        if (x > THRESHOLD) {
-            output += 'a';
-        } else if (x < -THRESHOLD) {
-            output += 'd';
+            if (x > THRESHOLD) {
+                output = "q";
+            } else if (x < -THRESHOLD) {
+                output = "e";
+            } else {
+                output = "w";
+            }
+        } else {
+            if (x > THRESHOLD) {
+                output = "a";
+            } else if (x < -THRESHOLD) {
+                output = "d";
+            } else {
+                output = "s";
+            }
         }
 
-        if (!output.equals("")) {
+        if (!instruction.equals(output)) {
             try {
                 PrintWriter out = new PrintWriter(new BufferedWriter(
                         new OutputStreamWriter(socket.getOutputStream())), true);
                 out.println(output);
+                instruction = output;
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             } catch (IOException e) {
