@@ -61,6 +61,16 @@ public class SensorActivity extends Activity implements SensorEventListener {
     }
 
     @Override
+    public final void onStop() {
+        super.onStop();
+        try {
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public final void onResume() {
         super.onResume();
         mSensorManager.registerListener(this, mGravity, SensorManager.SENSOR_DELAY_NORMAL);
